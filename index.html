@@ -7,57 +7,49 @@
 
 <style>
 body{
-    font-family: Arial, sans-serif;
+    font-family: Arial,sans-serif;
     background:#f5f7fb;
     margin:0;
     padding:30px;
 }
-
 .container{
-    max-width:600px;
+    max-width:900px;
     margin:auto;
-    background:white;
+    background:#fff;
     padding:30px;
     border-radius:15px;
-    box-shadow:0 0 20px rgba(0,0,0,0.1);
+    box-shadow:0 0 20px rgba(0,0,0,.1);
 }
-
 h1{
     text-align:center;
 }
-
 input{
     width:100%;
     padding:12px;
-    margin-top:10px;
     border:1px solid #ddd;
     border-radius:8px;
+    margin-top:10px;
 }
-
 button{
     width:100%;
-    padding:12px;
     margin-top:15px;
-    background:#111827;
-    color:white;
+    padding:12px;
     border:none;
     border-radius:8px;
+    background:#111827;
+    color:white;
     cursor:pointer;
 }
-
-button:hover{
-    opacity:0.9;
-}
-
-.result{
-    margin-top:25px;
-    display:none;
-}
-
-img{
-    width:100%;
+.card{
+    margin-top:15px;
+    padding:15px;
+    border:1px solid #e5e7eb;
     border-radius:10px;
-    margin-top:10px;
+    background:#fafafa;
+}
+.notfound{
+    color:red;
+    margin-top:20px;
 }
 </style>
 </head>
@@ -65,37 +57,90 @@ img{
 <body>
 
 <div class="container">
-
 <h1>📦 ตรวจสอบสถานะออเดอร์</h1>
 
-<input type="text" id="twitterId" placeholder="กรอก Twitter ID">
-
+<input id="twitterId" placeholder="กรอก Twitter / Line ID">
 <button onclick="searchOrder()">ค้นหา</button>
 
-<div class="result" id="result">
-
-<h3>สินค้า</h3>
-
-<img src="https://via.placeholder.com/500x300?text=Product+Image">
-
-<p><strong>สถานะ:</strong> กำลังดำเนินการ</p>
-
-<p><strong>เลขพัสดุ:</strong> TH123456789</p>
-
-</div>
-
+<div id="result"></div>
 </div>
 
 <script>
-function searchOrder(){
-   let id = document.getElementById("twitterId").value;
 
-   if(id.trim() === ""){
-      alert("กรุณากรอก Twitter ID");
-      return;
-   }
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vTlQXjybWNqhHPYyhqZLhjxr4zyBcrlFpPTpWkKhrihxQ2WMGVl3sqMnEpJJS4aa5YmgnzpLNjYd-wY/pub?output=csv";
 
-   document.getElementById("result").style.display="block";
+async function searchOrder(){
+
+    const keyword = document
+        .getElementById("twitterId")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const result = document.getElementById("result");
+    result.innerHTML = "กำลังค้นหา...";
+
+    try{
+
+        const response = await fetch(SHEET_URL);
+        const csv = await response.text();
+
+        const rows = csv.split("\n").slice(1);
+
+        let found = [];
+
+        rows.forEach(row => {
+
+            const cols = row.split(",");
+
+            const twitter = (cols[0] || "")
+            .replace(/"/g,"")
+            .trim()
+            .toLowerCase();
+
+            if(twitter === keyword){
+
+                found.push({
+                    orderNo: cols[1] || "",
+                    product: cols[2] || "",
+                    status: cols[3] || "",
+                    payment: cols[4] || "",
+                    tracking: cols[5] || ""
+                });
+            }
+
+        });
+
+        if(found.length === 0){
+            result.innerHTML =
+            '<p class="notfound">ไม่พบข้อมูลออเดอร์</p>';
+            return;
+        }
+
+        let html = "";
+
+        found.forEach(item => {
+
+            html += `
+            <div class="card">
+                <p><strong>Order No:</strong> ${item.orderNo}</p>
+                <p><strong>Product:</strong> ${item.product}</p>
+                <p><strong>Status:</strong> ${item.status}</p>
+                <p><strong>Payment:</strong> ${item.payment}</p>
+                <p><strong>Tracking:</strong> ${item.tracking}</p>
+            </div>
+            `;
+        });
+
+        result.innerHTML = html;
+
+    }catch(error){
+
+        result.innerHTML =
+        "<p class='notfound'>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>";
+
+    }
 }
 </script>
 
