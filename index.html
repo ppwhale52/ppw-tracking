@@ -106,14 +106,13 @@ button:hover{
     color:#6D28D9;
     font-weight:700;
     font-size:15px;
-    display:block;
     margin-bottom:2px;
 }
 
 .value{
     color:#333;
     margin-bottom:14px;
-    line-height:1.5;
+    line-height:1.6;
 }
 
 .order-header{
@@ -246,19 +245,24 @@ async function searchOrder(){
         found.forEach(item => {
 
             html += `
-            <div class="card">
+       <div class="card">
 
-            <p><strong>ORDER ID</strong><br>${item.orderNo}</p>
+       <div class="label">เลขออเดอร์</div>
+       <div class="value">${item.orderNo}</div>
 
-            <p><strong>Product</strong><br>${item.product}</p>
+       <div class="label">สินค้า</div>
+       <div class="value">${item.product}</div>
 
-            <p><strong>Status</strong><br>${item.status}</p>
+       <div class="label">สถานะ</div>
+       <div class="value">${item.status}</div>
 
-            <p><strong>Payment</strong><br>${item.payment}</p>
+       <div class="label">การชำระเงิน</div>
+       <div class="value">${item.payment}</div>
 
-            <p><strong>tracking</strong><br>${item.tracking}</p>
+      <div class="label">เลขพัสดุ</div>
+      <div class="value">${item.tracking}</div>
 
-            </div>
+</div>
             `;
         });
 
