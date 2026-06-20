@@ -1,74 +1,70 @@
+```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PPW Order Tracking</title>
+
+<title>Purple Whale Shop - Order Tracking</title>
 
 <style>
+
 body{
-    font-family: Arial,sans-serif;
-    background:##f7f2ff;
     margin:0;
     padding:30px;
+    background:#F7F2FF;
+    font-family:Arial,sans-serif;
 }
+
 .container{
     max-width:700px;
-    margin:60px auto;
-    background:white;
+    margin:50px auto;
+    background:#ffffff;
     padding:40px;
     border-radius:24px;
-    box-shadow:0 10px 30px rgba(124,58,237,.12);
+    box-shadow:0 10px 30px rgba(124,58,237,.15);
 }
-    
-h1{
-    text-align:center;
-}
-input{
-    border:2px solid #D8B4FE;
-    border-radius:14px;
-}
-    
-button{
-    width:220px;
-    display:block;
-    margin:20px auto;
-}
-.card{
-    margin-top:15px;
-    padding:15px;
-    border:1px solid #e5e7eb;
-    border-radius:10px;
-    background:#fafafa;
-}
-.notfound{
-    color:red;
-    margin-top:20px;
-}
+
 .header{
     text-align:center;
-    margin-bottom:25px;
+    margin-bottom:30px;
 }
 
 .header h1{
+    margin:0;
     color:#7C3AED;
-    margin-bottom:5px;
+    font-size:42px;
 }
 
 .header h2{
+    margin:10px 0;
     color:#6D28D9;
-    margin-top:0;
-    margin-bottom:10px;
-    font-size:22px;
 }
 
 .header p{
     color:#666;
-    margin-bottom:25px;
+}
+
+input{
+    width:100%;
+    box-sizing:border-box;
+    padding:15px;
+    border:2px solid #D8B4FE;
+    border-radius:14px;
+    font-size:16px;
 }
 
 button{
+    display:block;
+    width:220px;
+    margin:20px auto;
+    padding:14px;
+    border:none;
+    border-radius:14px;
     background:#8B5CF6;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
 }
 
 button:hover{
@@ -76,21 +72,48 @@ button:hover{
 }
 
 .card{
-    background:white;
+    background:#fff;
     border-left:5px solid #8B5CF6;
+    border-radius:12px;
+    padding:20px;
+    margin-top:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.05);
 }
-  
 
-    
+.card p{
+    margin:10px 0;
+}
+
+.notfound{
+    text-align:center;
+    color:#DC2626;
+    margin-top:20px;
+    font-weight:bold;
+}
+
+.loading{
+    text-align:center;
+    margin-top:20px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:30px;
+    color:#888;
+    font-size:14px;
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <div class="header">
-    <h1>🐳💜 Purple Whale Shop</h1>
-    <h2>Order Tracking</h2>
-    <p>ติดตามสถานะสินค้าและการจัดส่ง</p>
+<h1>🐳💜 Purple Whale Shop</h1>
+<h2>Order Tracking</h2>
+<p>ติดตามสถานะสินค้าและการจัดส่ง</p>
 </div>
 
 <input
@@ -100,8 +123,13 @@ placeholder="กรอก Twitter ID หรือ Order No.">
 <button onclick="searchOrder()">
 ค้นหาสถานะ
 </button>
-    
+
 <div id="result"></div>
+
+<div class="footer">
+Purple Whale Shop 💜
+</div>
+
 </div>
 
 <script>
@@ -111,21 +139,34 @@ const SHEET_URL =
 
 async function searchOrder(){
 
-    const keyword = document
-        .getElementById("twitterId")
-        .value
-        .trim()
-        .toLowerCase();
+    const keyword =
+    document.getElementById("twitterId")
+    .value
+    .trim()
+    .toLowerCase();
 
-    const result = document.getElementById("result");
-    result.innerHTML = "กำลังค้นหา...";
+    const result =
+    document.getElementById("result");
+
+    if(!keyword){
+        result.innerHTML =
+        "<p class='notfound'>กรุณากรอกข้อมูลก่อนค้นหา</p>";
+        return;
+    }
+
+    result.innerHTML =
+    "<p class='loading'>กำลังค้นหา...</p>";
 
     try{
 
-        const response = await fetch(SHEET_URL);
-        const csv = await response.text();
+        const response =
+        await fetch(SHEET_URL);
 
-        const rows = csv.split("\n").slice(1);
+        const csv =
+        await response.text();
+
+        const rows =
+        csv.split("\n").slice(1);
 
         let found = [];
 
@@ -133,27 +174,39 @@ async function searchOrder(){
 
             const cols = row.split(",");
 
-            const twitter = (cols[0] || "")
+            const twitter =
+            (cols[0] || "")
             .replace(/"/g,"")
             .trim()
             .toLowerCase();
 
-            if(twitter === keyword){
+            const orderNo =
+            (cols[1] || "")
+            .replace(/"/g,"")
+            .trim()
+            .toLowerCase();
+
+            if(
+                twitter === keyword ||
+                orderNo === keyword
+            ){
 
                 found.push({
-                    orderNo: cols[1] || "",
-                    product: cols[2] || "",
-                    status: cols[3] || "",
-                    payment: cols[4] || "",
-                    tracking: cols[5] || ""
+                    orderNo: cols[1] || "-",
+                    product: cols[2] || "-",
+                    status: cols[3] || "-",
+                    payment: cols[4] || "-",
+                    tracking: cols[5] || "-"
                 });
             }
 
         });
 
         if(found.length === 0){
+
             result.innerHTML =
-            '<p class="notfound">ไม่พบข้อมูลออเดอร์</p>';
+            "<p class='notfound'>ไม่พบข้อมูลออเดอร์</p>";
+
             return;
         }
 
@@ -163,11 +216,17 @@ async function searchOrder(){
 
             html += `
             <div class="card">
-                <p><strong>Order No:</strong> ${item.orderNo}</p>
-                <p><strong>Product:</strong> ${item.product}</p>
-                <p><strong>Status:</strong> ${item.status}</p>
-                <p><strong>Payment:</strong> ${item.payment}</p>
-                <p><strong>Tracking:</strong> ${item.tracking}</p>
+
+            <p><strong>เลขออเดอร์</strong><br>${item.orderNo}</p>
+
+            <p><strong>สินค้า</strong><br>${item.product}</p>
+
+            <p><strong>สถานะ</strong><br>${item.status}</p>
+
+            <p><strong>การชำระเงิน</strong><br>${item.payment}</p>
+
+            <p><strong>เลขพัสดุ</strong><br>${item.tracking}</p>
+
             </div>
             `;
         });
@@ -181,7 +240,9 @@ async function searchOrder(){
 
     }
 }
+
 </script>
 
 </body>
 </html>
+```
