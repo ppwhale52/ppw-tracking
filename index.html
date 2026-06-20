@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPW Order Tracking</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f7fb;
+    margin:0;
+    padding:30px;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    background:#111827;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.result{
+    margin-top:25px;
+    display:none;
+}
+
+img{
+    width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📦 ตรวจสอบสถานะออเดอร์</h1>
+
+<input type="text" id="twitterId" placeholder="กรอก Twitter ID">
+
+<button onclick="searchOrder()">ค้นหา</button>
+
+<div class="result" id="result">
+
+<h3>สินค้า</h3>
+
+<img src="https://via.placeholder.com/500x300?text=Product+Image">
+
+<p><strong>สถานะ:</strong> กำลังดำเนินการ</p>
+
+<p><strong>เลขพัสดุ:</strong> TH123456789</p>
+
+</div>
+
+</div>
+
+<script>
+function searchOrder(){
+   let id = document.getElementById("twitterId").value;
+
+   if(id.trim() === ""){
+      alert("กรุณากรอก Twitter ID");
+      return;
+   }
+
+   document.getElementById("result").style.display="block";
+}
+</script>
+
+</body>
+</html>
